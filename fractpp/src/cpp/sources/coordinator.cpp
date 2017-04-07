@@ -1,7 +1,7 @@
 #include <coordinator.hpp>
 #include <debug.hpp>
 #include <async/task.hpp>
-#include <async/thread.hpp>
+#include <async/tasker.hpp>
 #include <unistd.h>
 
 
@@ -51,7 +51,8 @@ namespace FPP {
 
     Coordinator::Coordinator(jobject bridge) {
         MyTask *task = new MyTask();
-        Async::LoopThread thread(task);
+
+        Async::LoopTasker thread(task);
         FPP_LOGD("Starting thread");
         thread.start();
         sleep(2);
@@ -64,10 +65,20 @@ namespace FPP {
         FPP_LOGD("Stopping thread");
         thread.stop();
         FPP_LOGD("Stopped thread");
-        /*Async::Thread thread(task);
+        /*
+        Async::Tasker thread(task);
         thread.start();
         thread.join();*/
-        
+
+        /* Async::CustomThread<int> thread;
+         int b = 18;
+         thread.create([](int *a) {
+             for (int i = 0; i < 10; i++) {
+                 FPP_LOGI("Thread is working! (a=%d)", (*a)++);
+             }
+         }, &b);
+         thread.join();
+         FPP_LOGI("Thread exited (a=%d)", b);*/
     }
 
     Coordinator::~Coordinator() {
